@@ -3,26 +3,65 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session } from "@supabase/supabase-js";
 
+export interface UserProfile {
+  id: string;
+  role: string;
+  name: string | null;
+  email: string;
+  client_id: string | null;
+}
+
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setLoading(false);
-      }
-    );
+  const fetchProfile = useCallback(async (userId: string, email: string) => {
+    const { data, error } = await supabase
+      .from("users")
+      .select("role, name, client_id")
+      .eq("id", userId)
+      .single();
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    if (!error && data) {
+      setUserProfile({
+        id: userId,
+        role: data.role,
+        name: data.name,
+        email,
+        client_id: data.client_id,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      if (session?.user) {
+        // Defer profile fetch to avoid Supabase deadlock
+        setTimeout(() => fetchProfile(session.user.id, session.user.email ?? ""), 0);
+      } else {
+        setUserProfile(null);
+      }
       setLoading(false);
     });
 
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session?.user) {
+        fetchProfile(session.user.id, session.user.email ?? "").finally(() =>
+          setLoading(false)
+        );
+      } else {
+        setLoading(false);
+      }
+    });
+
     return () => subscription.unsubscribe();
-  }, []);
+  }, [fetchProfile]);
 
   const login = useCallback(
     async (email: string, password: string) => {
@@ -35,7 +74,7 @@ export function useAuth() {
 
       const { data: profile, error: profileError } = await supabase
         .from("users")
-        .select("role, is_active")
+        .select("role, is_active, name, client_id")
         .eq("id", data.user.id)
         .single();
 
@@ -50,6 +89,14 @@ export function useAuth() {
           "Your account is inactive. Please contact your administrator."
         );
       }
+
+      setUserProfile({
+        id: data.user.id,
+        role: profile.role,
+        name: profile.name,
+        email: data.user.email ?? email,
+        client_id: profile.client_id,
+      });
 
       // --- DEBUG (remove after verification) ---
       const redirectPath =
@@ -67,6 +114,7 @@ export function useAuth() {
   );
 
   const logout = useCallback(async () => {
+    setUserProfile(null);
     await supabase.auth.signOut();
     navigate("/login", { replace: true });
   }, [navigate]);
@@ -85,5 +133,13 @@ export function useAuth() {
     if (error) throw error;
   }, []);
 
-  return { session, loading, login, logout, sendPasswordReset, updatePassword };
+  return {
+    session,
+    userProfile,
+    loading,
+    login,
+    logout,
+    sendPasswordReset,
+    updatePassword,
+  };
 }
