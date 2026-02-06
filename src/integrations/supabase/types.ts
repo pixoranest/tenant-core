@@ -16,31 +16,52 @@ export type Database = {
     Tables: {
       clients: {
         Row: {
+          billing_plan: string | null
           business_type: string | null
           created_at: string
           email: string
           id: string
+          monthly_allowance: number | null
           name: string
+          overage_rate: number | null
           phone: string | null
+          rate_per_minute: number | null
           status: string
+          timezone: string | null
+          trial_end_date: string | null
+          updated_at: string | null
         }
         Insert: {
+          billing_plan?: string | null
           business_type?: string | null
           created_at?: string
           email: string
           id?: string
+          monthly_allowance?: number | null
           name: string
+          overage_rate?: number | null
           phone?: string | null
+          rate_per_minute?: number | null
           status?: string
+          timezone?: string | null
+          trial_end_date?: string | null
+          updated_at?: string | null
         }
         Update: {
+          billing_plan?: string | null
           business_type?: string | null
           created_at?: string
           email?: string
           id?: string
+          monthly_allowance?: number | null
           name?: string
+          overage_rate?: number | null
           phone?: string | null
+          rate_per_minute?: number | null
           status?: string
+          timezone?: string | null
+          trial_end_date?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
