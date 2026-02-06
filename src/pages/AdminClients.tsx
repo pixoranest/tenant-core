@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,18 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/hooks/use-toast";
 import {
   Search,
   Plus,
@@ -50,6 +39,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import ClientFormModal from "@/components/ClientFormModal";
+import DeactivateClientDialog from "@/components/DeactivateClientDialog";
 import { ClientRecord, STATUS_COLOR, PLAN_LABEL } from "@/types/client";
 
 const STATUS_OPTIONS = ["all", "active", "inactive", "trial", "suspended"] as const;
@@ -62,9 +52,6 @@ export default function AdminClients() {
   const [page, setPage] = useState(0);
   const [modalOpen, setModalOpen] = useState(false);
   const [editClient, setEditClient] = useState<ClientRecord | null>(null);
-  const [deactivateId, setDeactivateId] = useState<string | null>(null);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   const { data: clients = [], isLoading } = useQuery({
     queryKey: ["admin-clients"],
@@ -78,22 +65,7 @@ export default function AdminClients() {
     },
   });
 
-  const deactivateMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("clients")
-        .update({ status: "inactive" } as any)
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-clients"] });
-      setDeactivateId(null);
-      toast({ title: "Client deactivated" });
-    },
-    onError: (e: Error) =>
-      toast({ title: "Deactivation failed", description: e.message, variant: "destructive" }),
-  });
+  const [deactivateClient, setDeactivateClient] = useState<ClientRecord | null>(null);
 
   const filtered = useMemo(() => {
     let list = clients;
@@ -240,7 +212,7 @@ export default function AdminClients() {
                             variant="ghost"
                             size="icon"
                             title="Deactivate"
-                            onClick={() => setDeactivateId(c.id)}
+                            onClick={() => setDeactivateClient(c)}
                           >
                             <ShieldOff className="h-4 w-4" />
                           </Button>
@@ -294,7 +266,7 @@ export default function AdminClients() {
                         variant="ghost"
                         size="icon"
                         title="Deactivate"
-                        onClick={() => setDeactivateId(c.id)}
+                        onClick={() => setDeactivateClient(c)}
                       >
                         <ShieldOff className="h-4 w-4" />
                       </Button>
@@ -342,27 +314,12 @@ export default function AdminClients() {
         editClient={editClient}
       />
 
-      {/* Deactivate Confirmation */}
-      <AlertDialog open={!!deactivateId} onOpenChange={(open) => !open && setDeactivateId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Deactivate Client</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will set the client's status to inactive. They will lose access until reactivated.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={deactivateMutation.isPending}
-              onClick={() => deactivateId && deactivateMutation.mutate(deactivateId)}
-            >
-              {deactivateMutation.isPending ? "Deactivating…" : "Deactivate"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeactivateClientDialog
+        clientId={deactivateClient?.id ?? null}
+        clientName={deactivateClient?.name ?? ""}
+        open={!!deactivateClient}
+        onOpenChange={(open) => { if (!open) setDeactivateClient(null); }}
+      />
     </div>
   );
 }
