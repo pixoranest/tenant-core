@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           billing_plan: string | null
           business_type: string | null
+          contact_name: string | null
           created_at: string
           email: string
           id: string
@@ -34,6 +35,7 @@ export type Database = {
         Insert: {
           billing_plan?: string | null
           business_type?: string | null
+          contact_name?: string | null
           created_at?: string
           email: string
           id?: string
@@ -50,6 +52,7 @@ export type Database = {
         Update: {
           billing_plan?: string | null
           business_type?: string | null
+          contact_name?: string | null
           created_at?: string
           email?: string
           id?: string

@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
@@ -26,14 +27,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -43,7 +36,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -57,50 +49,19 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { format } from "date-fns";
-
-type Client = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  status: string;
-  business_type: string | null;
-  billing_plan: string | null;
-  created_at: string;
-};
-
-type EditableClient = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  business_type: string;
-  billing_plan: string;
-};
+import ClientFormModal from "@/components/ClientFormModal";
+import { ClientRecord, STATUS_COLOR, PLAN_LABEL } from "@/types/client";
 
 const STATUS_OPTIONS = ["all", "active", "inactive", "trial", "suspended"] as const;
-
-const statusColor: Record<string, string> = {
-  active: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/20",
-  inactive: "bg-muted text-muted-foreground border-border",
-  trial: "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/20",
-  suspended: "bg-destructive/15 text-destructive border-destructive/20",
-};
-
-const planLabel: Record<string, string> = {
-  payg: "Pay As You Go",
-  monthly_500: "Monthly 500",
-  monthly_1000: "Monthly 1000",
-  enterprise: "Enterprise",
-};
-
 const PAGE_SIZE = 20;
 
 export default function AdminClients() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [page, setPage] = useState(0);
-  const [editClient, setEditClient] = useState<EditableClient | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editClient, setEditClient] = useState<ClientRecord | null>(null);
   const [deactivateId, setDeactivateId] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -110,40 +71,18 @@ export default function AdminClients() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("clients")
-        .select("id, name, email, phone, status, business_type, billing_plan, created_at")
+        .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as Client[];
+      return data as ClientRecord[];
     },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async (c: EditableClient) => {
-      const { error } = await supabase
-        .from("clients")
-        .update({
-          name: c.name,
-          email: c.email,
-          phone: c.phone || null,
-          business_type: c.business_type || null,
-          billing_plan: c.billing_plan || null,
-        })
-        .eq("id", c.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-clients"] });
-      setEditClient(null);
-      toast({ title: "Client updated" });
-    },
-    onError: (e: Error) => toast({ title: "Update failed", description: e.message, variant: "destructive" }),
   });
 
   const deactivateMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from("clients")
-        .update({ status: "inactive" })
+        .update({ status: "inactive" } as any)
         .eq("id", id);
       if (error) throw error;
     },
@@ -152,7 +91,8 @@ export default function AdminClients() {
       setDeactivateId(null);
       toast({ title: "Client deactivated" });
     },
-    onError: (e: Error) => toast({ title: "Deactivation failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) =>
+      toast({ title: "Deactivation failed", description: e.message, variant: "destructive" }),
   });
 
   const filtered = useMemo(() => {
@@ -170,16 +110,25 @@ export default function AdminClients() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
-  // reset page when filters change
   const handleSearch = (v: string) => { setSearch(v); setPage(0); };
   const handleStatus = (v: string) => { setStatusFilter(v); setPage(0); };
+
+  const openEdit = (c: ClientRecord) => {
+    setEditClient(c);
+    setModalOpen(true);
+  };
+
+  const openAdd = () => {
+    setEditClient(null);
+    setModalOpen(true);
+  };
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold text-foreground">Clients</h1>
-        <Button size="sm">
+        <Button size="sm" onClick={openAdd}>
           <Plus className="mr-2 h-4 w-4" /> Add New Client
         </Button>
       </div>
@@ -249,7 +198,11 @@ export default function AdminClients() {
               </TableHeader>
               <TableBody>
                 {paged.map((c) => (
-                  <TableRow key={c.id}>
+                  <TableRow
+                    key={c.id}
+                    className="cursor-pointer"
+                    onClick={() => navigate(`/admin/clients/${c.id}`)}
+                  >
                     <TableCell>
                       <p className="font-medium text-foreground">{c.name}</p>
                       {c.business_type && (
@@ -259,36 +212,27 @@ export default function AdminClients() {
                     <TableCell className="text-muted-foreground">{c.email}</TableCell>
                     <TableCell className="text-muted-foreground">{c.phone ?? "—"}</TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={statusColor[c.status] ?? ""}>
+                      <Badge variant="outline" className={STATUS_COLOR[c.status] ?? ""}>
                         {c.status.charAt(0).toUpperCase() + c.status.slice(1)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {planLabel[c.billing_plan ?? ""] ?? c.billing_plan ?? "—"}
+                      {PLAN_LABEL[c.billing_plan ?? ""] ?? c.billing_plan ?? "—"}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {format(new Date(c.created_at), "MMM d, yyyy")}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                       <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon" title="View">
-                          <Eye className="h-4 w-4" />
-                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          title="Edit"
-                          onClick={() =>
-                            setEditClient({
-                              id: c.id,
-                              name: c.name,
-                              email: c.email,
-                              phone: c.phone ?? "",
-                              business_type: c.business_type ?? "",
-                              billing_plan: c.billing_plan ?? "payg",
-                            })
-                          }
+                          title="View"
+                          onClick={() => navigate(`/admin/clients/${c.id}`)}
                         >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" title="Edit" onClick={() => openEdit(c)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
                         {c.status !== "inactive" && (
@@ -312,7 +256,11 @@ export default function AdminClients() {
           {/* Mobile cards */}
           <div className="space-y-3 md:hidden">
             {paged.map((c) => (
-              <Card key={c.id}>
+              <Card
+                key={c.id}
+                className="cursor-pointer"
+                onClick={() => navigate(`/admin/clients/${c.id}`)}
+              >
                 <CardHeader className="flex flex-row items-start justify-between pb-2">
                   <div>
                     <CardTitle className="text-base">{c.name}</CardTitle>
@@ -320,36 +268,34 @@ export default function AdminClients() {
                       <p className="text-xs text-muted-foreground">{c.business_type}</p>
                     )}
                   </div>
-                  <Badge variant="outline" className={statusColor[c.status] ?? ""}>
+                  <Badge variant="outline" className={STATUS_COLOR[c.status] ?? ""}>
                     {c.status.charAt(0).toUpperCase() + c.status.slice(1)}
                   </Badge>
                 </CardHeader>
                 <CardContent className="space-y-1 text-sm text-muted-foreground">
                   <p>{c.email}</p>
                   <p>{c.phone ?? "—"}</p>
-                  <p>{planLabel[c.billing_plan ?? ""] ?? c.billing_plan ?? "—"}</p>
+                  <p>{PLAN_LABEL[c.billing_plan ?? ""] ?? c.billing_plan ?? "—"}</p>
                   <p>{format(new Date(c.created_at), "MMM d, yyyy")}</p>
-                  <div className="flex gap-1 pt-2">
-                    <Button variant="ghost" size="icon" title="View"><Eye className="h-4 w-4" /></Button>
+                  <div className="flex gap-1 pt-2" onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="ghost"
                       size="icon"
-                      title="Edit"
-                      onClick={() =>
-                        setEditClient({
-                          id: c.id,
-                          name: c.name,
-                          email: c.email,
-                          phone: c.phone ?? "",
-                          business_type: c.business_type ?? "",
-                          billing_plan: c.billing_plan ?? "payg",
-                        })
-                      }
+                      title="View"
+                      onClick={() => navigate(`/admin/clients/${c.id}`)}
                     >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" title="Edit" onClick={() => openEdit(c)}>
                       <Pencil className="h-4 w-4" />
                     </Button>
                     {c.status !== "inactive" && (
-                      <Button variant="ghost" size="icon" title="Deactivate" onClick={() => setDeactivateId(c.id)}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Deactivate"
+                        onClick={() => setDeactivateId(c.id)}
+                      >
                         <ShieldOff className="h-4 w-4" />
                       </Button>
                     )}
@@ -363,11 +309,16 @@ export default function AdminClients() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <span>
-                Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)} of{" "}
-                {filtered.length}
+                Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, filtered.length)}{" "}
+                of {filtered.length}
               </span>
               <div className="flex gap-1">
-                <Button variant="outline" size="icon" disabled={page === 0} onClick={() => setPage(page - 1)}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={page === 0}
+                  onClick={() => setPage(page - 1)}
+                >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <Button
@@ -384,53 +335,12 @@ export default function AdminClients() {
         </>
       )}
 
-      {/* Edit Dialog */}
-      <Dialog open={!!editClient} onOpenChange={(open) => !open && setEditClient(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Client</DialogTitle>
-            <DialogDescription>Update client information.</DialogDescription>
-          </DialogHeader>
-          {editClient && (
-            <div className="grid gap-4 py-2">
-              <div className="grid gap-1.5">
-                <Label htmlFor="edit-name">Name</Label>
-                <Input id="edit-name" value={editClient.name} onChange={(e) => setEditClient({ ...editClient, name: e.target.value })} />
-              </div>
-              <div className="grid gap-1.5">
-                <Label htmlFor="edit-email">Email</Label>
-                <Input id="edit-email" type="email" value={editClient.email} onChange={(e) => setEditClient({ ...editClient, email: e.target.value })} />
-              </div>
-              <div className="grid gap-1.5">
-                <Label htmlFor="edit-phone">Phone</Label>
-                <Input id="edit-phone" value={editClient.phone} onChange={(e) => setEditClient({ ...editClient, phone: e.target.value })} />
-              </div>
-              <div className="grid gap-1.5">
-                <Label htmlFor="edit-btype">Business Type</Label>
-                <Input id="edit-btype" value={editClient.business_type} onChange={(e) => setEditClient({ ...editClient, business_type: e.target.value })} />
-              </div>
-              <div className="grid gap-1.5">
-                <Label htmlFor="edit-plan">Billing Plan</Label>
-                <Select value={editClient.billing_plan} onValueChange={(v) => setEditClient({ ...editClient, billing_plan: v })}>
-                  <SelectTrigger id="edit-plan"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="payg">Pay As You Go</SelectItem>
-                    <SelectItem value="monthly_500">Monthly 500</SelectItem>
-                    <SelectItem value="monthly_1000">Monthly 1000</SelectItem>
-                    <SelectItem value="enterprise">Enterprise</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setEditClient(null)}>Cancel</Button>
-            <Button disabled={updateMutation.isPending} onClick={() => editClient && updateMutation.mutate(editClient)}>
-              {updateMutation.isPending ? "Saving…" : "Save Changes"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Shared Modal */}
+      <ClientFormModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        editClient={editClient}
+      />
 
       {/* Deactivate Confirmation */}
       <AlertDialog open={!!deactivateId} onOpenChange={(open) => !open && setDeactivateId(null)}>
