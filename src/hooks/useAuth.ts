@@ -33,7 +33,6 @@ export function useAuth() {
 
       if (error) throw error;
 
-      // Fetch user profile to get role and active status
       const { data: profile, error: profileError } = await supabase
         .from("users")
         .select("role, is_active")
@@ -48,15 +47,21 @@ export function useAuth() {
       if (!profile.is_active) {
         await supabase.auth.signOut();
         throw new Error(
-          "Your account has been deactivated. Please contact your administrator."
+          "Your account is inactive. Please contact your administrator."
         );
       }
 
-      if (profile.role === "super_admin") {
-        navigate("/admin/dashboard", { replace: true });
-      } else {
-        navigate("/dashboard", { replace: true });
-      }
+      // --- DEBUG (remove after verification) ---
+      const redirectPath =
+        profile.role === "super_admin" ? "/admin/dashboard" : "/dashboard";
+      console.log("[AUTH DEBUG]", {
+        userId: data.user.id,
+        role: profile.role,
+        redirectPath,
+      });
+      // --- END DEBUG ---
+
+      navigate(redirectPath, { replace: true });
     },
     [navigate]
   );
