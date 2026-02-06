@@ -14,13 +14,90 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clients: {
+        Row: {
+          business_type: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          status: string
+        }
+        Insert: {
+          business_type?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          status?: string
+        }
+        Update: {
+          business_type?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          last_login: string | null
+          name: string | null
+          phone: string | null
+          role: string
+          two_factor_enabled: boolean
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          email: string
+          id: string
+          is_active?: boolean
+          last_login?: string | null
+          name?: string | null
+          phone?: string | null
+          role?: string
+          two_factor_enabled?: boolean
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          last_login?: string | null
+          name?: string | null
+          phone?: string | null
+          role?: string
+          two_factor_enabled?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_client_id: { Args: { _user_id: string }; Returns: string }
+      get_user_role: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
