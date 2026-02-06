@@ -11,6 +11,7 @@ import ClientRoute from "./components/routes/ClientRoute";
 import SuperAdminLayout from "./components/layouts/SuperAdminLayout";
 import ClientLayout from "./components/layouts/ClientLayout";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminClients from "./pages/AdminClients";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
@@ -32,7 +33,7 @@ const App = () => (
           <Route element={<SuperAdminRoute />}>
             <Route element={<SuperAdminLayout />}>
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              {/* Future: /admin/clients, /admin/voice-agents, /admin/settings */}
+              <Route path="/admin/clients" element={<AdminClients />} />
             </Route>
           </Route>
 
