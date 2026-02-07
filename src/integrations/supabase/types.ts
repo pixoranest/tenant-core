@@ -18,40 +18,64 @@ export type Database = {
         Row: {
           appointment_date: string
           appointment_time: string
+          calcom_booking_id: string | null
           call_log_id: string | null
+          cancelled_at: string | null
           client_id: string
+          completed_at: string | null
+          confirmed_at: string | null
           created_at: string | null
           customer_email: string | null
           customer_name: string | null
           customer_phone: string | null
+          duration_minutes: number | null
+          google_event_id: string | null
           id: string
+          no_show_at: string | null
           notes: string | null
+          source: string | null
           status: string | null
         }
         Insert: {
           appointment_date: string
           appointment_time: string
+          calcom_booking_id?: string | null
           call_log_id?: string | null
+          cancelled_at?: string | null
           client_id: string
+          completed_at?: string | null
+          confirmed_at?: string | null
           created_at?: string | null
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
+          duration_minutes?: number | null
+          google_event_id?: string | null
           id?: string
+          no_show_at?: string | null
           notes?: string | null
+          source?: string | null
           status?: string | null
         }
         Update: {
           appointment_date?: string
           appointment_time?: string
+          calcom_booking_id?: string | null
           call_log_id?: string | null
+          cancelled_at?: string | null
           client_id?: string
+          completed_at?: string | null
+          confirmed_at?: string | null
           created_at?: string | null
           customer_email?: string | null
           customer_name?: string | null
           customer_phone?: string | null
+          duration_minutes?: number | null
+          google_event_id?: string | null
           id?: string
+          no_show_at?: string | null
           notes?: string | null
+          source?: string | null
           status?: string | null
         }
         Relationships: [
@@ -410,6 +434,44 @@ export type Database = {
         }
         Relationships: []
       }
+      sync_logs: {
+        Row: {
+          client_id: string | null
+          error_message: string | null
+          id: string
+          integration_type: string | null
+          records_synced: number | null
+          status: string | null
+          synced_at: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          error_message?: string | null
+          id?: string
+          integration_type?: string | null
+          records_synced?: number | null
+          status?: string | null
+          synced_at?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          error_message?: string | null
+          id?: string
+          integration_type?: string | null
+          records_synced?: number | null
+          status?: string | null
+          synced_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_logs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
           client_id: string | null
@@ -498,6 +560,26 @@ export type Database = {
       }
     }
     Views: {
+      appointment_stats_daily: {
+        Row: {
+          appointment_date: string | null
+          attended: number | null
+          avg_duration_minutes: number | null
+          cancelled: number | null
+          client_id: string | null
+          no_shows: number | null
+          total_appointments: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daily_call_stats: {
         Row: {
           avg_duration_seconds: number | null
