@@ -1,9 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { format, parse } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, Eye } from "lucide-react";
+import { type DragData, type DropTarget, snapToSlot } from "@/hooks/useAppointmentDragDrop";
 
 interface Appointment {
   id: string;
@@ -18,6 +19,7 @@ interface Appointment {
 }
 
 const HOURS = Array.from({ length: 13 }, (_, i) => i + 8);
+const CELL_HEIGHT = 64;
 
 const statusColor: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
@@ -30,9 +32,19 @@ const statusColor: Record<string, string> = {
 export default function CalendarDayView({
   appointments,
   onSelectAppointment,
+  currentDate,
+  onDragStart,
+  onDragMove,
+  onDragEnd,
+  draggingId,
 }: {
   appointments: Appointment[];
   onSelectAppointment: (id: string) => void;
+  currentDate?: string;
+  onDragStart?: (data: DragData) => void;
+  onDragMove?: (x: number, y: number) => void;
+  onDragEnd?: (target: DropTarget) => void;
+  draggingId?: string | null;
 }) {
   const byHour = useMemo(() => {
     const map: Record<number, Appointment[]> = {};
@@ -44,12 +56,46 @@ export default function CalendarDayView({
     return map;
   }, [appointments]);
 
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent, a: Appointment) => {
+      e.preventDefault();
+      e.stopPropagation();
+      onDragStart?.({
+        appointmentId: a.id,
+        originalDate: a.appointment_date,
+        originalTime: a.appointment_time,
+      });
+    },
+    [onDragStart]
+  );
+
+  const handleCellDrop = useCallback(
+    (e: React.MouseEvent, hour: number) => {
+      if (!draggingId || !currentDate) return;
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const offsetY = e.clientY - rect.top;
+      const minutes = snapToSlot(offsetY, CELL_HEIGHT);
+      onDragEnd?.({ date: currentDate, hour, minutes });
+    },
+    [draggingId, currentDate, onDragEnd]
+  );
+
   return (
-    <div className="rounded-lg border border-border overflow-hidden">
+    <div
+      className="rounded-lg border border-border overflow-hidden"
+      onMouseMove={(e) => onDragMove?.(e.clientX, e.clientY)}
+    >
       {HOURS.map((hour) => {
         const appts = byHour[hour] ?? [];
         return (
-          <div key={hour} className="flex border-b border-border last:border-0">
+          <div
+            key={hour}
+            className={cn(
+              "flex border-b border-border last:border-0",
+              draggingId && "hover:bg-primary/5"
+            )}
+            onMouseUp={(e) => draggingId && handleCellDrop(e, hour)}
+          >
             <div className="w-16 shrink-0 border-r border-border p-2 text-right text-xs text-muted-foreground">
               {format(parse(`${hour}:00`, "H:mm", new Date()), "h a")}
             </div>
@@ -57,8 +103,12 @@ export default function CalendarDayView({
               {appts.map((a) => (
                 <div
                   key={a.id}
-                  className="rounded-lg border border-border bg-card p-3 hover:shadow-md transition-shadow cursor-pointer"
-                  onClick={() => onSelectAppointment(a.id)}
+                  className={cn(
+                    "rounded-lg border border-border bg-card p-3 hover:shadow-md transition-all cursor-grab active:cursor-grabbing",
+                    draggingId === a.id && "opacity-40 scale-95"
+                  )}
+                  onClick={() => !draggingId && onSelectAppointment(a.id)}
+                  onMouseDown={(e) => handleMouseDown(e, a)}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">

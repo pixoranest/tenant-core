@@ -9,6 +9,7 @@ import {
   format, startOfToday,
 } from "date-fns";
 import { useAppointments, type CalendarView } from "@/hooks/useAppointments";
+import { useAppointmentDragDrop } from "@/hooks/useAppointmentDragDrop";
 import CalendarMonthView from "@/components/appointments/CalendarMonthView";
 import CalendarWeekView from "@/components/appointments/CalendarWeekView";
 import CalendarDayView from "@/components/appointments/CalendarDayView";
@@ -16,6 +17,8 @@ import AppointmentListView from "@/components/appointments/AppointmentListView";
 import AppointmentDetailsModal from "@/components/appointments/AppointmentDetailsModal";
 import AppointmentInsights from "@/components/appointments/AppointmentInsights";
 import SyncStatusBar from "@/components/appointments/SyncStatusBar";
+import AutomationMonitoring from "@/components/appointments/AutomationMonitoring";
+import DragGhost from "@/components/appointments/DragGhost";
 
 export default function Appointments() {
   const [view, setView] = useState<CalendarView>("month");
@@ -24,6 +27,7 @@ export default function Appointments() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const { data: appointments, isLoading } = useAppointments(view, currentDate, listFilter);
+  const dragDrop = useAppointmentDragDrop();
 
   const navigate = useCallback(
     (dir: -1 | 1) => {
@@ -52,6 +56,14 @@ export default function Appointments() {
 
   return (
     <div className="space-y-5">
+      {/* Drag ghost overlay */}
+      <DragGhost
+        visible={!!dragDrop.dragging}
+        x={dragDrop.ghostPosition?.x ?? 0}
+        y={dragDrop.ghostPosition?.y ?? 0}
+        label={`Moving appointment…`}
+      />
+
       {/* Sync Status */}
       <SyncStatusBar />
 
@@ -133,12 +145,21 @@ export default function Appointments() {
               currentDate={currentDate}
               appointments={appointments ?? []}
               onSelectAppointment={setSelectedId}
+              onDragStart={dragDrop.startDrag}
+              onDragMove={dragDrop.updateGhost}
+              onDragEnd={dragDrop.completeDrop}
+              draggingId={dragDrop.dragging?.appointmentId}
             />
           )}
           {view === "day" && (
             <CalendarDayView
               appointments={appointments ?? []}
               onSelectAppointment={setSelectedId}
+              currentDate={format(currentDate, "yyyy-MM-dd")}
+              onDragStart={dragDrop.startDrag}
+              onDragMove={dragDrop.updateGhost}
+              onDragEnd={dragDrop.completeDrop}
+              draggingId={dragDrop.dragging?.appointmentId}
             />
           )}
           {view === "list" && (
@@ -152,6 +173,9 @@ export default function Appointments() {
 
       {/* Insights */}
       <AppointmentInsights />
+
+      {/* Automation Monitoring */}
+      <AutomationMonitoring />
 
       {/* Details Modal */}
       <AppointmentDetailsModal

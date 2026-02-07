@@ -12,6 +12,7 @@ import {
   Phone, Mail, Calendar, Clock, MapPin, Play,
   CheckCircle, XCircle, UserX, Trash2, ExternalLink,
 } from "lucide-react";
+import ReminderStatus from "./ReminderStatus";
 import { cn } from "@/lib/utils";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
@@ -202,7 +203,16 @@ export default function AppointmentDetailsModal({
               </>
             )}
 
-            {/* Section 5: Calendar Sync */}
+            {/* Section 5: Reminders */}
+            <Separator />
+            <ReminderStatus
+              reminder24hSent={(apt as any).reminder_24h_sent}
+              reminder24hSentAt={(apt as any).reminder_24h_sent_at}
+              reminder2hSent={(apt as any).reminder_2h_sent}
+              reminder2hSentAt={(apt as any).reminder_2h_sent_at}
+            />
+
+            {/* Section 6: Calendar Sync */}
             <Separator />
             <div className="space-y-2">
               <h3 className="text-sm font-semibold text-foreground">Calendar Sync</h3>
