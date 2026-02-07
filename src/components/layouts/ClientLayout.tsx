@@ -1,8 +1,9 @@
 import { Outlet } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { NavLink } from "@/components/NavLink";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
+import NotificationBell from "@/components/notifications/NotificationBell";
+import ConnectionStatus from "@/components/notifications/ConnectionStatus";
 import {
   Sidebar,
   SidebarContent,
@@ -28,6 +29,7 @@ import {
   LogOut,
   Building2,
   Mic,
+  Bell,
 } from "lucide-react";
 
 const navItems = [
@@ -36,6 +38,7 @@ const navItems = [
   { title: "Recordings", url: "/dashboard/recordings", icon: Mic },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
   { title: "Appointments", url: "/dashboard/appointments", icon: CalendarCheck },
+  { title: "Notifications", url: "/dashboard/notifications", icon: Bell },
   { title: "Billing", url: "/dashboard/billing", icon: CreditCard },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];
@@ -105,8 +108,9 @@ export default function ClientLayout() {
         <SidebarInset>
           <header className="flex h-14 items-center justify-between border-b border-border px-4">
             <SidebarTrigger className="mr-2" />
-            <div className="flex items-center gap-2">
-              <ThemeToggle />
+            <div className="flex items-center gap-3">
+              <ConnectionStatus />
+              <NotificationBell />
             </div>
           </header>
           <main className="flex-1 p-6">

@@ -20,6 +20,8 @@ import Analytics from "./pages/Analytics";
 import Recordings from "./pages/Recordings";
 import Appointments from "./pages/Appointments";
 import Billing from "./pages/Billing";
+import Notifications from "./pages/Notifications";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,6 +57,8 @@ const App = () => (
               <Route path="/dashboard/recordings" element={<Recordings />} />
               <Route path="/dashboard/appointments" element={<Appointments />} />
               <Route path="/dashboard/billing" element={<Billing />} />
+              <Route path="/dashboard/notifications" element={<Notifications />} />
+              <Route path="/dashboard/settings" element={<Settings />} />
             </Route>
           </Route>
 
