@@ -56,6 +56,153 @@ export type Database = {
           },
         ]
       }
+      client_features: {
+        Row: {
+          analytics_dashboard: boolean | null
+          api_access: boolean | null
+          calendar_integration: boolean | null
+          call_recordings_access: boolean | null
+          call_transcripts: boolean | null
+          client_id: string
+          created_at: string | null
+          custom_branding: boolean | null
+          data_export: boolean | null
+          id: string
+          max_concurrent_calls: number | null
+          realtime_monitoring: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          analytics_dashboard?: boolean | null
+          api_access?: boolean | null
+          calendar_integration?: boolean | null
+          call_recordings_access?: boolean | null
+          call_transcripts?: boolean | null
+          client_id: string
+          created_at?: string | null
+          custom_branding?: boolean | null
+          data_export?: boolean | null
+          id?: string
+          max_concurrent_calls?: number | null
+          realtime_monitoring?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          analytics_dashboard?: boolean | null
+          api_access?: boolean | null
+          calendar_integration?: boolean | null
+          call_recordings_access?: boolean | null
+          call_transcripts?: boolean | null
+          client_id?: string
+          created_at?: string | null
+          custom_branding?: boolean | null
+          data_export?: boolean | null
+          id?: string
+          max_concurrent_calls?: number | null
+          realtime_monitoring?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_features_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_integrations: {
+        Row: {
+          client_id: string
+          config: Json
+          created_at: string | null
+          id: string
+          integration_type: string
+          last_sync: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          client_id: string
+          config?: Json
+          created_at?: string | null
+          id?: string
+          integration_type: string
+          last_sync?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          client_id?: string
+          config?: Json
+          created_at?: string | null
+          id?: string
+          integration_type?: string
+          last_sync?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_integrations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_notifications: {
+        Row: {
+          client_id: string
+          created_at: string | null
+          email_call_failure: boolean | null
+          email_daily_summary: boolean | null
+          email_low_balance: boolean | null
+          email_weekly_report: boolean | null
+          id: string
+          sms_notifications: boolean | null
+          updated_at: string | null
+          webhook_notifications: boolean | null
+          webhook_url: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string | null
+          email_call_failure?: boolean | null
+          email_daily_summary?: boolean | null
+          email_low_balance?: boolean | null
+          email_weekly_report?: boolean | null
+          id?: string
+          sms_notifications?: boolean | null
+          updated_at?: string | null
+          webhook_notifications?: boolean | null
+          webhook_url?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string | null
+          email_call_failure?: boolean | null
+          email_daily_summary?: boolean | null
+          email_low_balance?: boolean | null
+          email_weekly_report?: boolean | null
+          id?: string
+          sms_notifications?: boolean | null
+          updated_at?: string | null
+          webhook_notifications?: boolean | null
+          webhook_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_notifications_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           billing_plan: string | null
