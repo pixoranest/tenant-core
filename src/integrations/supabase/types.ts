@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      client_agent_assignments: {
+        Row: {
+          agent_id: string
+          assigned_at: string | null
+          client_id: string
+          id: string
+          phone_number: string | null
+          status: string | null
+        }
+        Insert: {
+          agent_id: string
+          assigned_at?: string | null
+          client_id: string
+          id?: string
+          phone_number?: string | null
+          status?: string | null
+        }
+        Update: {
+          agent_id?: string
+          assigned_at?: string | null
+          client_id?: string
+          id?: string
+          phone_number?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_agent_assignments_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "voice_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_agent_assignments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
           billing_plan: string | null
@@ -114,6 +156,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      voice_agents: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          greeting_message: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          omnidimension_agent_id: string | null
+          system_prompt: string | null
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          greeting_message?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          omnidimension_agent_id?: string | null
+          system_prompt?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          greeting_message?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          omnidimension_agent_id?: string | null
+          system_prompt?: string | null
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
