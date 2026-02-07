@@ -88,9 +88,13 @@ export type Database = {
           execution_status: string | null
           external_provider: string | null
           id: string
+          last_played_at: string | null
+          notes: string | null
           outcome: string | null
+          playback_count: number | null
           recording_url: string | null
           status: string | null
+          tags: string[] | null
           transcript_text: string | null
           transcript_url: string | null
         }
@@ -110,9 +114,13 @@ export type Database = {
           execution_status?: string | null
           external_provider?: string | null
           id?: string
+          last_played_at?: string | null
+          notes?: string | null
           outcome?: string | null
+          playback_count?: number | null
           recording_url?: string | null
           status?: string | null
+          tags?: string[] | null
           transcript_text?: string | null
           transcript_url?: string | null
         }
@@ -132,9 +140,13 @@ export type Database = {
           execution_status?: string | null
           external_provider?: string | null
           id?: string
+          last_played_at?: string | null
+          notes?: string | null
           outcome?: string | null
+          playback_count?: number | null
           recording_url?: string | null
           status?: string | null
+          tags?: string[] | null
           transcript_text?: string | null
           transcript_url?: string | null
         }
