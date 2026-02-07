@@ -32,7 +32,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Info } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const AGENT_TYPES = [
   "Dental",
@@ -170,115 +171,133 @@ export default function AgentFormModal({ open, onOpenChange, editAgent }: Props)
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((v) => mutation.mutate(v))}
-            className="space-y-4"
+            className="space-y-6"
           >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Agent Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g. Dental Clinic Assistant" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* ── Basic Information ── */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                Basic Information
+              </h4>
 
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Type</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Agent Name</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
+                      <Input placeholder="e.g. Dental Clinic Assistant" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      {AGENT_TYPES.map((t) => (
-                        <SelectItem key={t} value={t}>
-                          {t}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Short description of what this agent does..."
-                      rows={2}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Type</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {AGENT_TYPES.map((t) => (
+                          <SelectItem key={t} value={t}>
+                            {t}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="greeting_message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Greeting Message</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Hello! How can I help you today?"
-                      rows={2}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="e.g. Handles appointment booking for dental clinics"
+                        rows={2}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <FormField
-              control={form.control}
-              name="system_prompt"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>System Prompt</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="You are a helpful assistant for..."
-                      rows={4}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* ── Omnidimension Configuration ── */}
+            <div className="space-y-4">
+              <h4 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                Omnidimension Configuration
+              </h4>
 
-            <FormField
-              control={form.control}
-              name="omnidimension_agent_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Omnidimension Agent ID</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Optional external ID" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="omnidimension_agent_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Omnidimension Agent ID</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. dental_agent_01" {...field} />
+                    </FormControl>
+                    <p className="text-xs text-muted-foreground">
+                      This ID maps to the agent created in Omnidimension.
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
+              <FormField
+                control={form.control}
+                name="greeting_message"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Greeting Message</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Hello! Thank you for calling [Business Name]. How may I help you today?"
+                        rows={2}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="system_prompt"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>System Prompt</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Define AI behavior and instructions for Omnidimension (configuration only)."
+                        rows={4}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* ── Status ── */}
             <FormField
               control={form.control}
               name="is_active"
@@ -291,6 +310,15 @@ export default function AgentFormModal({ open, onOpenChange, editAgent }: Props)
                 </FormItem>
               )}
             />
+
+            {/* ── Info box ── */}
+            <Alert className="border-muted bg-muted/40">
+              <Info className="h-4 w-4 text-muted-foreground" />
+              <AlertDescription className="text-xs text-muted-foreground">
+                Voice agents are configured here and executed by Omnidimension.
+                Assignment to clients and phone numbers is managed separately.
+              </AlertDescription>
+            </Alert>
 
             <DialogFooter>
               <Button
