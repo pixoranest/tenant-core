@@ -486,7 +486,28 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      daily_call_stats: {
+        Row: {
+          avg_duration_seconds: number | null
+          call_date: string | null
+          client_id: string | null
+          completed_calls: number | null
+          failed_calls: number | null
+          missed_calls: number | null
+          total_calls: number | null
+          total_cost: number | null
+          total_duration_seconds: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_logs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       archive_call_log: { Args: { call_uuid: string }; Returns: undefined }
