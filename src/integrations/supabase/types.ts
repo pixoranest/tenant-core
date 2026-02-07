@@ -449,6 +449,106 @@ export type Database = {
         }
         Relationships: []
       }
+      invoices: {
+        Row: {
+          billing_period_end: string | null
+          billing_period_start: string | null
+          client_id: string
+          created_at: string | null
+          currency: string | null
+          due_date: string | null
+          gst_number: string | null
+          id: string
+          invoice_number: string
+          paid_at: string | null
+          status: string | null
+          subtotal: number | null
+          tax: number | null
+          total: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          billing_period_end?: string | null
+          billing_period_start?: string | null
+          client_id: string
+          created_at?: string | null
+          currency?: string | null
+          due_date?: string | null
+          gst_number?: string | null
+          id?: string
+          invoice_number: string
+          paid_at?: string | null
+          status?: string | null
+          subtotal?: number | null
+          tax?: number | null
+          total?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          billing_period_end?: string | null
+          billing_period_start?: string | null
+          client_id?: string
+          created_at?: string | null
+          currency?: string | null
+          due_date?: string | null
+          gst_number?: string | null
+          id?: string
+          invoice_number?: string
+          paid_at?: string | null
+          status?: string | null
+          subtotal?: number | null
+          tax?: number | null
+          total?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_methods: {
+        Row: {
+          client_id: string
+          created_at: string | null
+          id: string
+          is_default: boolean | null
+          label: string | null
+          last_four: string | null
+          type: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          last_four?: string | null
+          type: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string | null
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          last_four?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_methods_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sync_logs: {
         Row: {
           action_type: string | null
@@ -483,6 +583,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "sync_logs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      usage_tracking: {
+        Row: {
+          billing_cycle_end: string
+          billing_cycle_start: string
+          client_id: string
+          created_at: string | null
+          id: string
+          overage_cost: number | null
+          overage_minutes: number | null
+          status: string | null
+          total_calls: number | null
+          total_cost: number | null
+          total_minutes: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          billing_cycle_end: string
+          billing_cycle_start: string
+          client_id: string
+          created_at?: string | null
+          id?: string
+          overage_cost?: number | null
+          overage_minutes?: number | null
+          status?: string | null
+          total_calls?: number | null
+          total_cost?: number | null
+          total_minutes?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          billing_cycle_end?: string
+          billing_cycle_start?: string
+          client_id?: string
+          created_at?: string | null
+          id?: string
+          overage_cost?: number | null
+          overage_minutes?: number | null
+          status?: string | null
+          total_calls?: number | null
+          total_cost?: number | null
+          total_minutes?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "usage_tracking_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
