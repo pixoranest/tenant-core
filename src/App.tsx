@@ -17,6 +17,7 @@ import AdminAgents from "./pages/AdminAgents";
 import Dashboard from "./pages/Dashboard";
 import CallLogs from "./pages/CallLogs";
 import Analytics from "./pages/Analytics";
+import Recordings from "./pages/Recordings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/dashboard/call-logs" element={<CallLogs />} />
               <Route path="/dashboard/analytics" element={<Analytics />} />
+              <Route path="/dashboard/recordings" element={<Recordings />} />
             </Route>
           </Route>
 
