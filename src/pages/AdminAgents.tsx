@@ -5,6 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import {
   Plus,
@@ -71,20 +77,25 @@ export default function AdminAgents() {
     },
   });
 
-  const { data: assignmentCounts = {} } = useQuery({
+  const { data: assignmentData = {} } = useQuery({
     queryKey: ["agent-assignment-counts"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("client_agent_assignments")
-        .select("agent_id, status");
+        .select("agent_id, status, clients(name)");
       if (error) throw error;
-      const counts: Record<string, number> = {};
-      (data ?? []).forEach((a) => {
+      const result: Record<string, { count: number; clients: string[] }> = {};
+      (data ?? []).forEach((a: any) => {
         if (a.status === "active") {
-          counts[a.agent_id] = (counts[a.agent_id] ?? 0) + 1;
+          if (!result[a.agent_id]) result[a.agent_id] = { count: 0, clients: [] };
+          result[a.agent_id].count += 1;
+          const name = a.clients?.name;
+          if (name && !result[a.agent_id].clients.includes(name)) {
+            result[a.agent_id].clients.push(name);
+          }
         }
       });
-      return counts;
+      return result;
     },
   });
 
@@ -177,7 +188,9 @@ export default function AdminAgents() {
           {sorted.map((agent) => {
             const typeConfig = getTypeConfig(agent.type);
             const TypeIcon = typeConfig.icon;
-            const clientCount = assignmentCounts[agent.id] ?? 0;
+            const agentData = assignmentData[agent.id];
+            const clientCount = agentData?.count ?? 0;
+            const clientNames = agentData?.clients ?? [];
             const isActive = agent.is_active !== false;
 
             return (
@@ -223,10 +236,28 @@ export default function AdminAgents() {
 
                   {/* Footer: usage + actions */}
                   <div className="flex items-center justify-between pt-1">
-                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Users className="h-3.5 w-3.5" />
-                      Used by {clientCount} client{clientCount !== 1 ? "s" : ""}
-                    </span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground cursor-default">
+                            <Users className="h-3.5 w-3.5" />
+                            {clientCount > 0
+                              ? `Used by ${clientCount} client${clientCount !== 1 ? "s" : ""}`
+                              : "Not assigned to any client"}
+                          </span>
+                        </TooltipTrigger>
+                        {clientNames.length > 0 && (
+                          <TooltipContent side="bottom" className="max-w-xs">
+                            <p className="font-medium text-xs mb-1">Assigned to:</p>
+                            <ul className="text-xs space-y-0.5">
+                              {clientNames.map((n) => (
+                                <li key={n}>{n}</li>
+                              ))}
+                            </ul>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    </TooltipProvider>
                     <div
                       className="flex gap-1"
                       onClick={(e) => e.stopPropagation()}
@@ -269,8 +300,12 @@ export default function AdminAgents() {
       <AgentDetailsModal
         agent={detailsAgent}
         open={!!detailsAgent}
-        onOpenChange={(open) => {
-          if (!open) setDetailsAgent(null);
+        onOpenChange={(o) => {
+          if (!o) setDetailsAgent(null);
+        }}
+        onEdit={(a) => {
+          setDetailsAgent(null);
+          openEdit(a);
         }}
       />
     </div>
