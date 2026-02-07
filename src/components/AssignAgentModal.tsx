@@ -40,6 +40,7 @@ const schema = z.object({
     .string()
     .min(1, "Phone number is required")
     .regex(phoneRegex, "Invalid phone number format (e.g. +919876543210)"),
+  status: z.enum(["active", "inactive"]),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -56,23 +57,23 @@ export default function AssignAgentModal({ open, onOpenChange, clientId }: Props
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { agent_id: "", phone_number: "" },
+    defaultValues: { agent_id: "", phone_number: "", status: "active" },
   });
 
   useEffect(() => {
-    if (open) form.reset({ agent_id: "", phone_number: "" });
+    if (open) form.reset({ agent_id: "", phone_number: "", status: "active" });
   }, [open, form]);
 
   const { data: agents = [] } = useQuery({
-    queryKey: ["active-voice-agents"],
+    queryKey: ["active-voice-agents", clientId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("voice_agents")
-        .select("id, name, type")
-        .eq("is_active", true)
-        .order("name");
-      if (error) throw error;
-      return data;
+      const [agentsRes, assignedRes] = await Promise.all([
+        supabase.from("voice_agents").select("id, name, type").eq("is_active", true).order("name"),
+        supabase.from("client_agent_assignments").select("agent_id").eq("client_id", clientId),
+      ]);
+      if (agentsRes.error) throw agentsRes.error;
+      const assignedIds = new Set((assignedRes.data ?? []).map((r) => r.agent_id));
+      return (agentsRes.data ?? []).filter((a) => !assignedIds.has(a.id));
     },
     enabled: open,
   });
@@ -83,7 +84,7 @@ export default function AssignAgentModal({ open, onOpenChange, clientId }: Props
         client_id: clientId,
         agent_id: values.agent_id,
         phone_number: values.phone_number,
-        status: "active",
+        status: values.status,
       });
       if (error) throw error;
     },
@@ -144,6 +145,27 @@ export default function AssignAgentModal({ open, onOpenChange, clientId }: Props
                   <FormControl>
                     <Input placeholder="+919876543210" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
