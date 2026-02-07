@@ -34,6 +34,11 @@
 
     --radius: 0.625rem;
 
+    --kpi-blue: 210 80% 55%;
+    --kpi-green: 152 60% 42%;
+    --kpi-purple: 270 55% 55%;
+    --kpi-teal: 174 62% 38%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 200 10% 30%;
     --sidebar-primary: 174 62% 38%;
