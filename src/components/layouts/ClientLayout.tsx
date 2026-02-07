@@ -27,11 +27,13 @@ import {
   Settings,
   LogOut,
   Building2,
+  Mic,
 } from "lucide-react";
 
 const navItems = [
   { title: "Home", url: "/dashboard", icon: Home },
   { title: "Call Logs", url: "/dashboard/call-logs", icon: Phone },
+  { title: "Recordings", url: "/dashboard/recordings", icon: Mic },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
   { title: "Appointments", url: "/dashboard/appointments", icon: CalendarCheck },
   { title: "Billing", url: "/dashboard/billing", icon: CreditCard },
