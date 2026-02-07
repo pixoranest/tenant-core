@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Download } from "lucide-react";
 import { type AnalyticsRange } from "@/hooks/useAnalyticsData";
+import { useAnalyticsRealtime } from "@/hooks/useAnalyticsRealtime";
 import AnalyticsTopMetrics from "@/components/analytics/AnalyticsTopMetrics";
 import CallVolumeChart from "@/components/analytics/CallVolumeChart";
 import PerformanceCharts from "@/components/analytics/PerformanceCharts";
@@ -23,6 +24,7 @@ export default function Analytics() {
   const [range, setRange] = useState<AnalyticsRange>("30d");
   const [compare, setCompare] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
+  useAnalyticsRealtime();
 
   const rangeLabel = rangeOptions.find((r) => r.value === range)?.label ?? range;
 
