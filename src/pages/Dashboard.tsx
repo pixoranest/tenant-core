@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useDashboardKPIs } from "@/hooks/useDashboardData";
+import { useDashboardRealtime } from "@/hooks/useDashboardRealtime";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { format } from "date-fns";
@@ -14,6 +15,7 @@ export default function Dashboard() {
   const { userProfile } = useAuth();
   const { data: kpiData, isLoading: kpiLoading } = useDashboardKPIs();
   const queryClient = useQueryClient();
+  useDashboardRealtime();
 
   const handleRefresh = () => {
     queryClient.invalidateQueries({ queryKey: ["dashboard-kpis"] });
