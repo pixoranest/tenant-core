@@ -14,6 +14,123 @@ export type Database = {
   }
   public: {
     Tables: {
+      appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          call_log_id: string | null
+          client_id: string
+          created_at: string | null
+          customer_email: string | null
+          customer_name: string | null
+          customer_phone: string | null
+          id: string
+          notes: string | null
+          status: string | null
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          call_log_id?: string | null
+          client_id: string
+          created_at?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          call_log_id?: string | null
+          client_id?: string
+          created_at?: string | null
+          customer_email?: string | null
+          customer_name?: string | null
+          customer_phone?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_call_log_id_fkey"
+            columns: ["call_log_id"]
+            isOneToOne: false
+            referencedRelation: "call_logs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      call_logs: {
+        Row: {
+          agent_id: string | null
+          call_id: string
+          call_timestamp: string
+          caller_phone: string | null
+          client_id: string
+          created_at: string | null
+          data_collected: Json | null
+          direction: string | null
+          duration: number | null
+          id: string
+          outcome: string | null
+          status: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          call_id: string
+          call_timestamp: string
+          caller_phone?: string | null
+          client_id: string
+          created_at?: string | null
+          data_collected?: Json | null
+          direction?: string | null
+          duration?: number | null
+          id?: string
+          outcome?: string | null
+          status?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          call_id?: string
+          call_timestamp?: string
+          caller_phone?: string | null
+          client_id?: string
+          created_at?: string | null
+          data_collected?: Json | null
+          direction?: string | null
+          duration?: number | null
+          id?: string
+          outcome?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_logs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "voice_agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "call_logs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       client_agent_assignments: {
         Row: {
           agent_id: string
