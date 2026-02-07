@@ -17,7 +17,7 @@ export interface ClientRecord {
 }
 
 export interface ClientFormData {
-  // Step 1
+  // Step 1: Basic Info
   name: string;
   contact_name: string;
   email: string;
@@ -25,13 +25,53 @@ export interface ClientFormData {
   business_type: string;
   timezone: string;
   status: string;
-  // Step 2
+
+  // Step 2: Agent & Features
+  agent_id: string;
+  agent_phone: string;
+  max_concurrent_calls: number;
+  feature_call_recordings: boolean;
+  feature_call_transcripts: boolean;
+  feature_realtime_monitoring: boolean;
+  feature_analytics_dashboard: boolean;
+  feature_data_export: boolean;
+  feature_api_access: boolean;
+  feature_calendar_integration: boolean;
+  feature_custom_branding: boolean;
+
+  // Step 3: Billing
   billing_plan: string;
   rate_per_minute: string;
   monthly_allowance: string;
   overage_rate: string;
+  auto_recharge: boolean;
+  low_balance_threshold: string;
   has_trial: boolean;
   trial_end_date: string;
+
+  // Step 4: Integrations
+  integration_google_sheets: boolean;
+  google_sheets_url: string;
+  integration_google_calendar: boolean;
+  google_calendar_id: string;
+  integration_cal_com: boolean;
+  cal_com_api_key: string;
+  integration_webhook: boolean;
+  webhook_url: string;
+
+  // Step 5: Notifications & Security
+  notif_daily_summary: boolean;
+  notif_weekly_report: boolean;
+  notif_low_balance: boolean;
+  notif_call_failure: boolean;
+  notif_sms: boolean;
+  notif_webhook: boolean;
+  notif_webhook_url: string;
+  password_mode: "auto" | "manual";
+  manual_password: string;
+  manual_password_confirm: string;
+  two_factor_enabled: boolean;
+  session_timeout: string;
 }
 
 export const EMPTY_CLIENT_FORM: ClientFormData = {
@@ -42,12 +82,49 @@ export const EMPTY_CLIENT_FORM: ClientFormData = {
   business_type: "",
   timezone: "Asia/Kolkata",
   status: "active",
+
+  agent_id: "",
+  agent_phone: "",
+  max_concurrent_calls: 5,
+  feature_call_recordings: false,
+  feature_call_transcripts: false,
+  feature_realtime_monitoring: false,
+  feature_analytics_dashboard: false,
+  feature_data_export: false,
+  feature_api_access: false,
+  feature_calendar_integration: false,
+  feature_custom_branding: false,
+
   billing_plan: "payg",
   rate_per_minute: "2.5",
   monthly_allowance: "0",
   overage_rate: "3.0",
+  auto_recharge: false,
+  low_balance_threshold: "100",
   has_trial: false,
   trial_end_date: "",
+
+  integration_google_sheets: false,
+  google_sheets_url: "",
+  integration_google_calendar: false,
+  google_calendar_id: "",
+  integration_cal_com: false,
+  cal_com_api_key: "",
+  integration_webhook: false,
+  webhook_url: "",
+
+  notif_daily_summary: false,
+  notif_weekly_report: false,
+  notif_low_balance: false,
+  notif_call_failure: false,
+  notif_sms: false,
+  notif_webhook: false,
+  notif_webhook_url: "",
+  password_mode: "auto",
+  manual_password: "",
+  manual_password_confirm: "",
+  two_factor_enabled: false,
+  session_timeout: "30",
 };
 
 export const BUSINESS_TYPES = [
