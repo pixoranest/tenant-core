@@ -15,6 +15,7 @@ import AdminClients from "./pages/AdminClients";
 import AdminClientDetails from "./pages/AdminClientDetails";
 import AdminAgents from "./pages/AdminAgents";
 import Dashboard from "./pages/Dashboard";
+import CallLogs from "./pages/CallLogs";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,7 +46,7 @@ const App = () => (
           <Route element={<ClientRoute />}>
             <Route element={<ClientLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
-              {/* Future: /dashboard/call-logs, /dashboard/analytics, etc. */}
+              <Route path="/dashboard/call-logs" element={<CallLogs />} />
             </Route>
           </Route>
 
