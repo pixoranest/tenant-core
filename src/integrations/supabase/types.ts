@@ -33,6 +33,10 @@ export type Database = {
           id: string
           no_show_at: string | null
           notes: string | null
+          reminder_24h_sent: boolean | null
+          reminder_24h_sent_at: string | null
+          reminder_2h_sent: boolean | null
+          reminder_2h_sent_at: string | null
           source: string | null
           status: string | null
         }
@@ -54,6 +58,10 @@ export type Database = {
           id?: string
           no_show_at?: string | null
           notes?: string | null
+          reminder_24h_sent?: boolean | null
+          reminder_24h_sent_at?: string | null
+          reminder_2h_sent?: boolean | null
+          reminder_2h_sent_at?: string | null
           source?: string | null
           status?: string | null
         }
@@ -75,6 +83,10 @@ export type Database = {
           id?: string
           no_show_at?: string | null
           notes?: string | null
+          reminder_24h_sent?: boolean | null
+          reminder_24h_sent_at?: string | null
+          reminder_2h_sent?: boolean | null
+          reminder_2h_sent_at?: string | null
           source?: string | null
           status?: string | null
         }
@@ -297,6 +309,7 @@ export type Database = {
           id: string
           integration_type: string
           last_sync: string | null
+          paused: boolean | null
           status: string | null
           updated_at: string | null
         }
@@ -307,6 +320,7 @@ export type Database = {
           id?: string
           integration_type: string
           last_sync?: string | null
+          paused?: boolean | null
           status?: string | null
           updated_at?: string | null
         }
@@ -317,6 +331,7 @@ export type Database = {
           id?: string
           integration_type?: string
           last_sync?: string | null
+          paused?: boolean | null
           status?: string | null
           updated_at?: string | null
         }
@@ -436,6 +451,7 @@ export type Database = {
       }
       sync_logs: {
         Row: {
+          action_type: string | null
           client_id: string | null
           error_message: string | null
           id: string
@@ -445,6 +461,7 @@ export type Database = {
           synced_at: string | null
         }
         Insert: {
+          action_type?: string | null
           client_id?: string | null
           error_message?: string | null
           id?: string
@@ -454,6 +471,7 @@ export type Database = {
           synced_at?: string | null
         }
         Update: {
+          action_type?: string | null
           client_id?: string | null
           error_message?: string | null
           id?: string
