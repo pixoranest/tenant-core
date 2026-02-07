@@ -169,6 +169,26 @@ Deno.serve(async (req) => {
       });
     }
 
+    // 5. Create notification for new call
+    await supabase.from("notifications").insert({
+      client_id: payload.client_id,
+      type: "call",
+      title: `New call from ${payload.caller_phone}`,
+      message: `${payload.status} call · ${Math.round(payload.duration / 60)}min · ₹${cost}`,
+      link: "/dashboard/call-logs",
+    });
+
+    // Notification for appointment if created
+    if (appointmentId && dc?.appointment_date) {
+      await supabase.from("notifications").insert({
+        client_id: payload.client_id,
+        type: "appointment",
+        title: `New appointment scheduled for ${dc.appointment_date}`,
+        message: `${dc.name ?? "Customer"} · ${dc.appointment_time ?? "TBD"}`,
+        link: "/dashboard/appointments",
+      });
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
