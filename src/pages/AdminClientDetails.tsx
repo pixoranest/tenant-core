@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import AssignedAgentsList from "@/components/AssignedAgentsList";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -185,20 +186,7 @@ export default function AdminClientDetails() {
         </Card>
 
         {/* Section 4: Voice Agents */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-base">Assigned Voice Agents</CardTitle>
-            <Button variant="outline" size="sm" disabled>
-              <Bot className="mr-1 h-3.5 w-3.5" /> Assign Agent
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center justify-center py-8 text-center">
-              <Bot className="mb-3 h-8 w-8 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">No agents assigned yet</p>
-            </div>
-          </CardContent>
-        </Card>
+        <AssignedAgentsList clientId={clientId!} />
 
         {/* Section 5: Recent Activity */}
         <Card>
