@@ -3,6 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import AssignedAgentsList from "@/components/AssignedAgentsList";
+import ClientFeatureAccess from "@/components/ClientFeatureAccess";
+import ClientIntegrations from "@/components/ClientIntegrations";
+import ClientNotifications from "@/components/ClientNotifications";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -188,7 +191,16 @@ export default function AdminClientDetails() {
         {/* Section 4: Voice Agents */}
         <AssignedAgentsList clientId={clientId!} />
 
-        {/* Section 5: Recent Activity */}
+        {/* Section 5: Feature Access */}
+        <ClientFeatureAccess clientId={clientId!} />
+
+        {/* Section 6: Integrations */}
+        <ClientIntegrations clientId={clientId!} />
+
+        {/* Section 7: Notifications */}
+        <ClientNotifications clientId={clientId!} />
+
+        {/* Section 8: Recent Activity */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Recent Activity</CardTitle>
