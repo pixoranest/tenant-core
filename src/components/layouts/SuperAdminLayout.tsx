@@ -30,7 +30,7 @@ import {
 const navItems = [
   { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
   { title: "Clients", url: "/admin/clients", icon: Users },
-  { title: "Voice Agents", url: "/admin/voice-agents", icon: Bot },
+  { title: "Voice Agents", url: "/admin/agents", icon: Bot },
   { title: "Settings", url: "/admin/settings", icon: Settings },
 ];
 

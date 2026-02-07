@@ -13,6 +13,7 @@ import ClientLayout from "./components/layouts/ClientLayout";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminClients from "./pages/AdminClients";
 import AdminClientDetails from "./pages/AdminClientDetails";
+import AdminAgents from "./pages/AdminAgents";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/clients" element={<AdminClients />} />
               <Route path="/admin/clients/:clientId" element={<AdminClientDetails />} />
+              <Route path="/admin/agents" element={<AdminAgents />} />
             </Route>
           </Route>
 
