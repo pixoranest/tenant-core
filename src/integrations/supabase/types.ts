@@ -74,45 +74,69 @@ export type Database = {
       call_logs: {
         Row: {
           agent_id: string | null
+          archived: boolean | null
+          archived_at: string | null
           call_id: string
           call_timestamp: string
           caller_phone: string | null
           client_id: string
+          cost: number | null
           created_at: string | null
           data_collected: Json | null
           direction: string | null
           duration: number | null
+          execution_status: string | null
+          external_provider: string | null
           id: string
           outcome: string | null
+          recording_url: string | null
           status: string | null
+          transcript_text: string | null
+          transcript_url: string | null
         }
         Insert: {
           agent_id?: string | null
+          archived?: boolean | null
+          archived_at?: string | null
           call_id: string
           call_timestamp: string
           caller_phone?: string | null
           client_id: string
+          cost?: number | null
           created_at?: string | null
           data_collected?: Json | null
           direction?: string | null
           duration?: number | null
+          execution_status?: string | null
+          external_provider?: string | null
           id?: string
           outcome?: string | null
+          recording_url?: string | null
           status?: string | null
+          transcript_text?: string | null
+          transcript_url?: string | null
         }
         Update: {
           agent_id?: string | null
+          archived?: boolean | null
+          archived_at?: string | null
           call_id?: string
           call_timestamp?: string
           caller_phone?: string | null
           client_id?: string
+          cost?: number | null
           created_at?: string | null
           data_collected?: Json | null
           direction?: string | null
           duration?: number | null
+          execution_status?: string | null
+          external_provider?: string | null
           id?: string
           outcome?: string | null
+          recording_url?: string | null
           status?: string | null
+          transcript_text?: string | null
+          transcript_url?: string | null
         }
         Relationships: [
           {
@@ -465,6 +489,11 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      archive_call_log: { Args: { call_uuid: string }; Returns: undefined }
+      calculate_call_cost: {
+        Args: { duration_seconds: number; rate_per_minute: number }
+        Returns: number
+      }
       get_user_client_id: { Args: { _user_id: string }; Returns: string }
       get_user_role: { Args: { _user_id: string }; Returns: string }
     }
