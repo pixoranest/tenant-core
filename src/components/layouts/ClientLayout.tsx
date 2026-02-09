@@ -27,10 +27,10 @@ import {
   CreditCard,
   Settings,
   LogOut,
-  Building2,
   Mic,
   Bell,
 } from "lucide-react";
+import pixoranestLogo from "@/assets/pixoranest-logo.png";
 
 const navItems = [
   { title: "Home", url: "/dashboard", icon: Home },
@@ -52,10 +52,7 @@ export default function ClientLayout() {
         <Sidebar>
           <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
             <div className="flex items-center gap-2">
-              <Building2 className="h-6 w-6 text-primary" />
-              <span className="text-base font-semibold text-sidebar-foreground truncate">
-                {userProfile?.name ?? "Dashboard"}
-              </span>
+              <img src={pixoranestLogo} alt="PixoraNest" className="h-8 w-auto" />
             </div>
           </SidebarHeader>
 
