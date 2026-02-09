@@ -25,7 +25,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import pixoranestLogo from "@/assets/pixoranest-logo.png";
+import BrandLogo from "@/components/BrandLogo";
 
 const navItems = [
   { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
@@ -43,7 +43,7 @@ export default function SuperAdminLayout() {
         <Sidebar>
           <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
             <div className="flex items-center gap-2">
-              <img src={pixoranestLogo} alt="PixoraNest" className="h-8 w-auto" />
+              <BrandLogo className="h-8 w-auto" />
             </div>
           </SidebarHeader>
 
