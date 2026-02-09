@@ -7,6 +7,7 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import pixoranestLogo from "@/assets/pixoranest-logo.png";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -64,10 +65,8 @@ export default function Login() {
 
       <div className="w-full max-w-[420px] animate-fade-in">
         {/* Logo */}
-        <div className="mb-8 flex flex-col items-center gap-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-xl shadow-md">
-            C
-          </div>
+        <div className="mb-8 flex flex-col items-center gap-3">
+          <img src={pixoranestLogo} alt="PixoraNest" className="h-12 w-auto" />
           <h1 className="text-xl font-semibold tracking-tight text-foreground">
             Welcome back
           </h1>
