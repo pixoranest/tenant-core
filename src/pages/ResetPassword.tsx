@@ -7,6 +7,7 @@ import { Loader2, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import BrandLogo from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -66,10 +67,8 @@ export default function ResetPassword() {
       <ThemeToggle />
 
       <div className="w-full max-w-[420px] animate-fade-in">
-        <div className="mb-8 flex flex-col items-center gap-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-xl shadow-md">
-            C
-          </div>
+        <div className="mb-8 flex flex-col items-center gap-3">
+          <BrandLogo className="h-12 w-auto" />
           <h1 className="text-xl font-semibold tracking-tight text-foreground">
             Set new password
           </h1>
