@@ -24,8 +24,8 @@ import {
   Bot,
   Settings,
   LogOut,
-  ShieldCheck,
 } from "lucide-react";
+import pixoranestLogo from "@/assets/pixoranest-logo.png";
 
 const navItems = [
   { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
@@ -43,10 +43,7 @@ export default function SuperAdminLayout() {
         <Sidebar>
           <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="h-6 w-6 text-primary" />
-              <span className="text-base font-semibold text-sidebar-foreground">
-                Admin Panel
-              </span>
+              <img src={pixoranestLogo} alt="PixoraNest" className="h-8 w-auto" />
             </div>
           </SidebarHeader>
 
